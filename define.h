@@ -38,29 +38,11 @@ long IMU_read_frequence;
 bool IMU_fail_safe = 0;
 
 //===========================POSE===========================//
-//angle PID
-
-float ANG_P = 1.2;
-float ANG_I = 0.1;
-float ANG_D = 0;
-
-int ANG_I_MAX = 10;
-int ANG_D_MAX = 10;
-int ANG_PID_MAX = 200;
-
-float ANG_YAW_P = 0;
-float ANG_YAW_I = 0;
-float ANG_YAW_D = 0;
-int ANG_YAW_I_MAX = 20;
-int ANG_YAW_D_MAX = 20;
-
-
 //PID
-
 float CONTROL_GAIN = 1;
 
-float POS_P = 0.8;
-float POS_I = 0.01;
+float POS_P = 0.5;
+float POS_I = 0.005;
 float POS_D = 0;
 
 int POS_I_MAX = 100;
@@ -77,8 +59,8 @@ float HEIGHT_P = 0.1;
 float HEIGHT_I = 0;
 float HEIGHT_D = 0;
 
-int ANGLE_GAIN = 10;
 
+//define
 float PITCH_P_VAL , PITCH_I_VAL , PITCH_D_VAL;
 float ROLL_P_VAL , ROLL_I_VAL , ROLL_D_VAL;
 float YAW_P_VAL , YAW_I_VAL , YAW_D_VAL;
@@ -117,9 +99,6 @@ bool RX_END = 0;
 
 bool debug = 0;
 int DEBUGGING_DATA[30];
-
-//===========================Serial===========================//
-
 
 //===========================OUTPUT===========================//
 int M1_VAL, M2_VAL, M3_VAL, M4_VAL, M5_VAL, M6_VAL;
