@@ -38,6 +38,9 @@ bool IMU_fail_safe = 0;
 
 //===========================POSE===========================//
 //angle PID
+
+float CONTROL_GAIN = 1;
+
 float ANG_P = 1.2;
 float ANG_I = 0.1;
 float ANG_D = 0;
