@@ -1,4 +1,4 @@
-//push
+
 void STABLE() {
     int pos_value[4] = { 0, 0, 0, 0 };
 

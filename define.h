@@ -1,4 +1,3 @@
-//push
 //POS CONTROL VALUE
 #define MAX_ANGLE 30
 #define MAX_YAW_ANGULAR 45

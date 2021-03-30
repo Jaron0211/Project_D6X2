@@ -1,7 +1,6 @@
 #include <Wire.h>
 #include <Servo.h>
 
-//push
 #include "define.h"
 #include "RC.h"
 #include "IMU.h"

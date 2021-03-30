@@ -1,4 +1,3 @@
-//push
 bool acc_cal_start;
 
 int ACC_step = 0;

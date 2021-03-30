@@ -1,4 +1,5 @@
-//push
+
+
 void setup_mpu_6050_registers() {
 
   Wire.beginTransmission(0x68);

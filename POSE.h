@@ -1,4 +1,3 @@
-//push
 void ang_control(float DES_PIT = 0 , float DES_ROL = 0, float DES_YAW = 0,bool RESET = 0) {
 
 
