@@ -13,6 +13,14 @@ void Gyro_cal() {
     gyro_y_cal += gyro_y;
     gyro_z_cal += gyro_z;
     acc_total_vector_level += sqrt((acc_x * acc_x) + (acc_y * acc_y) + (acc_z * acc_z));
+
+    if ((abs(gyro_x) > 400) or (abs(gyro_y) > 400 )or (abs(gyro_z) > 400)) {
+        gyro_x_cal = 0;
+        gyro_y_cal = 0;
+        gyro_z_cal = 0;
+        cal_int = 0;
+    }
+
     delay(3);
     if (millis() - LED_TIMER > 200) {
         digitalWrite(LED, LED_STATE);

@@ -1,6 +1,5 @@
 void ang_control(float DES_PIT = 0, float DES_ROL = 0, float DES_YAW = 0, bool RESET = 0) {
 
-
     float PITCH_ANGLE_error = DES_PIT - PITCH;
     float ROLL_ANGLE_error = DES_ROL - ROLL;
 
@@ -12,7 +11,7 @@ void ang_control(float DES_PIT = 0, float DES_ROL = 0, float DES_YAW = 0, bool R
 
     //PITCH
     PITCH_P_VAL = PITCH_error;
-    PITCH_I_VAL += PITCH_error * POS_I;
+    PITCH_I_VAL += PITCH_error * POS_I/100;
     if (RESET) {
         PITCH_I_VAL = 0;
     }
@@ -27,7 +26,7 @@ void ang_control(float DES_PIT = 0, float DES_ROL = 0, float DES_YAW = 0, bool R
 
     //ROLL
     ROLL_P_VAL = ROLL_error;
-    ROLL_I_VAL += ROLL_error * POS_I;
+    ROLL_I_VAL += ROLL_error * POS_I/100;
     if (RESET) {
         ROLL_I_VAL = 0;
     }
@@ -41,7 +40,7 @@ void ang_control(float DES_PIT = 0, float DES_ROL = 0, float DES_YAW = 0, bool R
 
     //YAW
     YAW_P_VAL = YAW_error;
-    YAW_I_VAL += YAW_I * YAW_error;
+    YAW_I_VAL += YAW_I * YAW_error/100;
     if (RESET) {
         YAW_I_VAL = 0;
     }

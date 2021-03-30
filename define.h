@@ -39,10 +39,10 @@ bool IMU_fail_safe = 0;
 
 //===========================POSE===========================//
 //PID
-float CONTROL_GAIN = 1;
+float CONTROL_GAIN = 2;
 
-float POS_P = 0.5;
-float POS_I = 0.005;
+float POS_P = 0.4;
+float POS_I = 0.01;
 float POS_D = 0;
 
 int POS_I_MAX = 100;

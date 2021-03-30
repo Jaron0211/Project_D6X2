@@ -2,6 +2,10 @@
 void STABLE() {
     int pos_value[4] = { 0, 0, 0, 0 };
 
+    if (CH[4] > 1500) {
+        ARM = 0;
+    }
+
     if (ARM) {
         digitalWrite(LED, 1);
     }
