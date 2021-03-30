@@ -52,7 +52,7 @@ int ANG_YAW_I_MAX = 20;
 int ANG_YAW_D_MAX = 20;
 
 //gyro PID
-float POS_P = 0.7;
+float POS_P = 0.8;
 float POS_I = 0.02;
 float POS_D = 0;
 
