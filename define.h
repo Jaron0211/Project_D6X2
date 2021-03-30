@@ -2,6 +2,7 @@
 #define MAX_ANGLE 30
 #define MAX_YAW_ANGULAR 45
 
+#define START_SPEED 1200
 #define MIN_SPEED 1000
 #define MAX_SPEED 2000
 

@@ -18,6 +18,8 @@ unsigned long ch1_timer, ch2_timer, ch3_timer, ch4_timer, ch5_timer, ch6_timer;
 boolean ch1_s, ch2_s, ch3_s, ch4_s, ch5_s, ch6_s;
 
 void setup() {
+  
+  pinMode(LED, OUTPUT);
 
   Serial.begin(115200);
   Wire.begin();
@@ -40,6 +42,8 @@ void setup() {
 
   esc_output_timer = micros();
   ARM_TIMER = millis();
+
+  digitalWrite(LED, LOW);
 
 }
 
@@ -71,9 +75,7 @@ void loop() {
         //caculation
         if (micros() - esc_start_timer > 2500) {
             angle_read();
-            debug_data_collect();
-            DEBUG_PRINT();
-            Serial_RX();
+
             switch (MODE){
                 default:
                     M1_VAL = MIN_SPEED;
@@ -85,6 +87,7 @@ void loop() {
                     STABLE();
                     break;
                 case 2:
+                    ESC_cali();
                     break;
                 }
             }
