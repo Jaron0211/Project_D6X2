@@ -119,14 +119,11 @@ void debug_data_collect() {
 
 void DEBUG_PRINT() {
   
-    for (int i = 0; i <= 36; i++) {
-        Serial.print(DEBUGGING_DATA[i]);
-        if (i == 36) {
-            Serial.print("\n");
-        }
-        else {
-            Serial.print(",");
-        }
-    }
+    Serial.print(PITCH);
+    Serial.print(",");
+    Serial.print(ROLL);
+    Serial.print(",");
+    Serial.print(PITCH_PID_OUTPUT);
+    Serial.println();
   
 }

@@ -1,5 +1,5 @@
 //POS CONTROL VALUE
-#define MAX_ANGLE 30
+#define MAX_ANGLE 45
 #define MAX_YAW_ANGULAR 45
 
 #define START_SPEED 1200
@@ -55,12 +55,12 @@ int ANG_YAW_I_MAX = 20;
 int ANG_YAW_D_MAX = 20;
 
 
-//gyro PID
+//PID
 
 float CONTROL_GAIN = 1;
 
 float POS_P = 0.8;
-float POS_I = 0.02;
+float POS_I = 0.01;
 float POS_D = 0;
 
 int POS_I_MAX = 100;

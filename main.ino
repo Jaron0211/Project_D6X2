@@ -75,6 +75,8 @@ void loop() {
         //caculation
         if (micros() - esc_start_timer > 2500) {
             angle_read();
+            debug_data_collect();
+            DEBUG_PRINT();
 
             switch (MODE){
                 default:
