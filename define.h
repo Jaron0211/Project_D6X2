@@ -24,8 +24,8 @@ float angle_roll_acc, angle_pitch_acc;
 float PITCH, ROLL, YAW;
 
 float pitch_cal, roll_cal, yaw_base ;
-float pitch_base = -3;
-float roll_base = -5;
+float pitch_base = 0;
+float roll_base = 0;
 
 int temperature;
 
@@ -39,8 +39,6 @@ bool IMU_fail_safe = 0;
 
 //===========================POSE===========================//
 //angle PID
-
-float CONTROL_GAIN = 1;
 
 float ANG_P = 1.2;
 float ANG_I = 0.1;
@@ -56,7 +54,11 @@ float ANG_YAW_D = 0;
 int ANG_YAW_I_MAX = 20;
 int ANG_YAW_D_MAX = 20;
 
+
 //gyro PID
+
+float CONTROL_GAIN = 1;
+
 float POS_P = 0.8;
 float POS_I = 0.02;
 float POS_D = 0;
@@ -89,7 +91,6 @@ float FL_ROLL, FR_ROLL, BL_ROLL, BR_ROLL;
 float FL_PITCH, FR_PITCH, BL_PITCH, BR_PITCH;
 float FL_YAW, FR_YAW, BL_YAW, BR_YAW;
 int FL_out, FR_out, BL_out, BR_out;
-
 
 float ANG_PITCH_P_VAL , ANG_PITCH_I_VAL , ANG_PITCH_D_VAL;
 float ANG_ROLL_P_VAL , ANG_ROLL_I_VAL , ANG_ROLL_D_VAL;
