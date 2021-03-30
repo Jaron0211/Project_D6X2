@@ -6,6 +6,7 @@ long Acc_front, Acc_back, Acc_left, Acc_right, Acc_top, Acc_down;
 long Acc_X_bias, Acc_Y_bias, Acc_Z_bias;
 
 void Gyro_cal() {
+  bool LED_STATE = 0;
   for (int cal_int = 0; cal_int < 2000 ; cal_int ++) {
     read_mpu_6050_data();
     gyro_x_cal += gyro_x;
@@ -13,6 +14,11 @@ void Gyro_cal() {
     gyro_z_cal += gyro_z;
     acc_total_vector_level += sqrt((acc_x * acc_x) + (acc_y * acc_y) + (acc_z * acc_z));
     delay(3);
+    if (millis() - LED_TIMER > 200) {
+        digitalWrite(LED, LED_STATE);
+        LED_STATE = !LED_STATE;
+        LED_TIMER = millis();
+    }
   }
   gyro_x_cal /= 2000;
   gyro_y_cal /= 2000;

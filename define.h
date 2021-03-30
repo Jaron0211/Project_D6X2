@@ -6,6 +6,7 @@
 #define MAX_SPEED 2000
 
 int LED = A2;
+unsigned long LED_TIMER = 0;
 
 //===========================IMU===========================//
 double IMU_ROTATION_DEGREE = 90;

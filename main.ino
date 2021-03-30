@@ -20,17 +20,18 @@ boolean ch1_s, ch2_s, ch3_s, ch4_s, ch5_s, ch6_s;
 void setup() {
 
   Serial.begin(115200);
-  //Serial.setTimeout(5);
   Wire.begin();
   TWBR = 12;
 
   //motor setup
   DDRD |= B11111100 ;
-  
+  PORTD |= B11111100;
+  delay(1);
+  PORTD &= B00000011;
+
   setup_mpu_6050_registers();
   Gyro_cal();
   angle_read();
-  angle_yaw = 0;
 
   //ISR SETUP
   PCICR |= (1 << PCIE0);
