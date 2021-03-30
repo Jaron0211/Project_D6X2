@@ -1,10 +1,13 @@
+//push
 void ang_control(float DES_PIT = 0 , float DES_ROL = 0, float DES_YAW = 0,bool RESET = 0) {
+
 
   float PITCH_ANGLE_error = DES_PIT - PITCH;
   float ROLL_ANGLE_error = DES_ROL - ROLL;
 
   //PITCH
   ANG_PITCH_P_VAL = PITCH_ANGLE_error;
+ 
   
   ANG_PITCH_I_VAL += PITCH_ANGLE_error*(ANG_I/100);
   if(RESET){
