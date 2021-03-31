@@ -115,8 +115,8 @@ void angle_read() {
     YAW = angle_yaw ;
     */
 
-    PITCH = -cos(IMU_ROTATION_ANGLE)*angle_pitch + sin(IMU_ROTATION_ANGLE)*angle_roll;// * 0.2 + PITCH * 0.8;
-    ROLL = -sin(IMU_ROTATION_ANGLE)*angle_pitch + cos(IMU_ROTATION_ANGLE)*angle_roll;// *0.2 + ROLL * 0.8;
+    PITCH = -cos(IMU_ROTATION_ANGLE)*angle_pitch + sin(IMU_ROTATION_ANGLE)*angle_roll * 0.3 + PITCH * 0.7;
+    ROLL = -sin(IMU_ROTATION_ANGLE)*angle_pitch + cos(IMU_ROTATION_ANGLE)*angle_roll *0.3 + ROLL * 0.7;
     YAW = angle_yaw ;
     
     if (YAW <= 0) {
