@@ -68,13 +68,46 @@ void Serial_RX() {
 
 */
 
+struct DEBUG_COLLECTION {
+    float GYRO_PITCH;
+    float GYRO_ROLL;
+    float GYRO_YAW;
+    float ANGLE_PITCH;
+    float ANGLE_ROLL;
+    float PITCH;
+    float ROLL;
+    float YAW;
+    float PITCH_P_VAL;
+    float PITCH_I_VAL;
+    float PITCH_D_VAL;
+    int PITCH_PID_OUTPUT;
+}data;
+
 void DEBUG_PRINT() {
-  
-    Serial.print(PITCH);
+    
+    Serial.print(data.GYRO_PITCH);
     Serial.print(",");
-    Serial.print(ROLL);
+    Serial.print(data.GYRO_ROLL);
     Serial.print(",");
-    Serial.print(PITCH_PID_OUTPUT);
-    Serial.println();
+    Serial.print(data.GYRO_YAW);
+    Serial.print(",");
+    Serial.print(data.ANGLE_PITCH);
+    Serial.print(",");
+    Serial.print(data.ANGLE_ROLL);
+    Serial.print(",");
+    Serial.print(data.PITCH);
+    Serial.print(",");
+    Serial.print(data.ROLL);
+    Serial.print(",");
+    Serial.print(data.YAW);
+    Serial.print(",");
+    Serial.print(data.PITCH_P_VAL);
+    Serial.print(",");
+    Serial.print(data.PITCH_I_VAL);
+    Serial.print(",");
+    Serial.print(data.PITCH_D_VAL);
+    Serial.print(",");
+    Serial.print(data.PITCH_PID_OUTPUT);
+    Serial.println(",");
   
 }

@@ -1,5 +1,4 @@
 
-
 void setup_mpu_6050_registers() {
 
   Wire.beginTransmission(0x68);
@@ -72,9 +71,16 @@ void angle_read() {
   gyro_roll = gyro_roll * 0.7 + (-sin(IMU_ROTATION_ANGLE) * gyro_x + cos(IMU_ROTATION_ANGLE) * gyro_y) / 65.5 * 0.3;
   gyro_yaw = gyro_yaw * 0.7 + gyro_z / 65.5 * 0.3;
 
-  angle_pitch = ( angle_pitch + gyro_x * 0.0000611 ) * 0.2 + angle_pitch * 0.8;//1/250hz/65.5lsb/s)
-  angle_roll = ( angle_roll + gyro_y * 0.0000611 ) * 0.2 + angle_roll * 0.8;
-  
+  data.GYRO_PITCH = gyro_pitch;
+  data.GYRO_ROLL = gyro_roll;
+  data.GYRO_YAW = gyro_yaw;
+
+  angle_pitch = ( angle_pitch + gyro_x * 0.0000611 ) * 1 + angle_pitch * 0;//1/250hz/65.5lsb/s)
+  angle_roll = ( angle_roll + gyro_y * 0.0000611 ) * 1 + angle_roll * 0;
+
+  data.ANGLE_PITCH = angle_pitch;
+  data.ANGLE_ROLL = angle_roll;
+
   /*
   gyro_pitch = gyro_pitch * 0.7 + gyro_y / 65.5 * 0.3;
   gyro_roll = gyro_roll * 0.7 - gyro_x / 65.5 * 0.3;
@@ -118,7 +124,11 @@ void angle_read() {
     PITCH = (-cos(IMU_ROTATION_ANGLE) * angle_pitch + sin(IMU_ROTATION_ANGLE) * angle_roll);// *0.5 + PITCH * 0.5;
     ROLL = (-sin(IMU_ROTATION_ANGLE) * angle_pitch + cos(IMU_ROTATION_ANGLE) * angle_roll);// *0.5 + ROLL * 0.5;
     YAW = angle_yaw ;
-    
+
+    data.PITCH = PITCH;
+    data.ROLL = ROLL;
+    data.YAW = YAW;
+        
     if (YAW <= 0) {
       YAW += 360;
     } else if (YAW >= 360) {
@@ -128,8 +138,8 @@ void angle_read() {
   } else {
     angle_pitch = angle_pitch_acc;
     angle_roll = angle_roll_acc;
-    PITCH = cos(IMU_ROTATION_ANGLE)*angle_pitch - sin(IMU_ROTATION_ANGLE)*angle_roll;
-    ROLL = sin(IMU_ROTATION_ANGLE)*angle_pitch - cos(IMU_ROTATION_ANGLE)*angle_roll;
+    PITCH = -cos(IMU_ROTATION_ANGLE) * angle_pitch - sin(IMU_ROTATION_ANGLE) * angle_roll;
+    ROLL = -sin(IMU_ROTATION_ANGLE) * angle_pitch - cos(IMU_ROTATION_ANGLE) * angle_roll;
     YAW = 0;
     set_gyro_angles = true;
   }

@@ -2,11 +2,11 @@
 #include <Servo.h>
 
 #include "define.h"
+#include "Serial.h"
 #include "RC.h"
 #include "IMU.h"
 #include "POSE.h"
 #include "cailibrate.h"
-#include "Serial.h"
 #include "output.h"
 
 bool terminal_mode = 0;
@@ -75,7 +75,7 @@ void loop() {
         //caculation
         if (micros() - esc_start_timer > 2500) {
             angle_read();
-            //DEBUG_PRINT();
+            DEBUG_PRINT();
 
             switch (MODE){
                 default:

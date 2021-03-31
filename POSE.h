@@ -11,18 +11,27 @@ void ang_control(float DES_PIT = 0, float DES_ROL = 0, float DES_YAW = 0, bool R
 
     //PITCH
     PITCH_P_VAL = PITCH_error;
+
+    data.PITCH_P_VAL = PITCH_P_VAL;
+
     PITCH_I_VAL += PITCH_error * POS_I/100;
     if (RESET) {
         PITCH_I_VAL = 0;
     }
     PITCH_I_VAL = constrain(PITCH_I_VAL, -POS_I_MAX, POS_I_MAX);
 
+    data.PITCH_I_VAL = PITCH_I_VAL;
+
     PITCH_D_VAL = PITCH_error - PITCH_error_pre;
     PITCH_D_VAL = constrain(PITCH_D_VAL, -POS_D_MAX, POS_D_MAX);
     PITCH_error_pre = PITCH_error;
+    
+    data.PITCH_D_VAL = PITCH_D_VAL; 
+    
     PITCH_PID_OUTPUT = POS_P * PITCH_P_VAL + PITCH_I_VAL + POS_D * PITCH_D_VAL;
     PITCH_PID_OUTPUT = constrain(PITCH_PID_OUTPUT, -GYRO_PID_MAX, GYRO_PID_MAX);
 
+    data.PITCH_PID_OUTPUT = PITCH_PID_OUTPUT;
 
     //ROLL
     ROLL_P_VAL = ROLL_error;
