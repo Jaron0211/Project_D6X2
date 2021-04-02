@@ -5,8 +5,8 @@ void ang_control(float DES_PIT = 0, float DES_ROL = 0, float DES_YAW = 0, bool R
 
     //=============================================================================//
 
-    float PITCH_error = (-cos(IMU_ROTATION_ANGLE) * gyro_x + sin(IMU_ROTATION_ANGLE) * gyro_y)/65.5 - (PITCH_ANGLE_error * CONTROL_GAIN);
-    float ROLL_error = (-sin(IMU_ROTATION_ANGLE) * gyro_x + cos(IMU_ROTATION_ANGLE) * gyro_y)/65.5 - (ROLL_ANGLE_error * CONTROL_GAIN);
+    float PITCH_error = -PITCH_ANGLE_error;//(-cos(IMU_ROTATION_ANGLE) * gyro_x + sin(IMU_ROTATION_ANGLE) * gyro_y)/65.5 ;
+    float ROLL_error = -ROLL_ANGLE_error;//(-sin(IMU_ROTATION_ANGLE) * gyro_x + cos(IMU_ROTATION_ANGLE) * gyro_y)/65.5 ;
     float YAW_error = gyro_yaw - (DES_YAW * CONTROL_GAIN);
 
     //PITCH
@@ -43,6 +43,7 @@ void ang_control(float DES_PIT = 0, float DES_ROL = 0, float DES_YAW = 0, bool R
     ROLL_D_VAL = ROLL_error - ROLL_error_pre;
     ROLL_D_VAL = constrain(ROLL_D_VAL, -POS_D_MAX, POS_D_MAX);
     ROLL_error_pre = ROLL_error;
+
     ROLL_PID_OUTPUT = POS_P * ROLL_P_VAL + ROLL_I_VAL + POS_D * ROLL_D_VAL;
     ROLL_PID_OUTPUT = constrain(ROLL_PID_OUTPUT, -GYRO_PID_MAX, GYRO_PID_MAX);
 

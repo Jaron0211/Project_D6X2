@@ -37,10 +37,10 @@ void STABLE() {
 
         if (pos_value[2] > 1200) {
           ang_control(pos_value[0], pos_value[1], pos_value[3], 0);
-          M1_VAL = constrain((pos_value[2] + PITCH_PID_OUTPUT - ROLL_PID_OUTPUT + YAW_PID_OUTPUT), START_SPEED, MAX_SPEED);
-          M2_VAL = constrain((pos_value[2] - PITCH_PID_OUTPUT + ROLL_PID_OUTPUT + YAW_PID_OUTPUT), START_SPEED, MAX_SPEED);
-          M3_VAL = constrain((pos_value[2] + PITCH_PID_OUTPUT + ROLL_PID_OUTPUT - YAW_PID_OUTPUT), START_SPEED, MAX_SPEED);
-          M4_VAL = constrain((pos_value[2] - PITCH_PID_OUTPUT - ROLL_PID_OUTPUT - YAW_PID_OUTPUT), START_SPEED, MAX_SPEED);
+          M1_VAL = constrain((pos_value[2] + PITCH_PID_OUTPUT /*- ROLL_PID_OUTPUT + YAW_PID_OUTPUT*/), START_SPEED, MAX_SPEED);
+          M2_VAL = constrain((pos_value[2] - PITCH_PID_OUTPUT /*+ ROLL_PID_OUTPUT + YAW_PID_OUTPUT*/), START_SPEED, MAX_SPEED);
+          M3_VAL = constrain((pos_value[2] + PITCH_PID_OUTPUT /*+ ROLL_PID_OUTPUT - YAW_PID_OUTPUT*/), START_SPEED, MAX_SPEED);
+          M4_VAL = constrain((pos_value[2] - PITCH_PID_OUTPUT /*- ROLL_PID_OUTPUT - YAW_PID_OUTPUT*/), START_SPEED, MAX_SPEED);
 
         } else {
           ang_control(0, 0, 0, 1);
