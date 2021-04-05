@@ -76,9 +76,14 @@ void loop() {
         }
         //caculation
         if (micros() - esc_start_timer > 2500) {
-            angle_read();
+            
             DEBUG_PRINT();
             Serial_RX();
+
+
+            angle_read();
+
+
 
             switch (MODE){
                 default:

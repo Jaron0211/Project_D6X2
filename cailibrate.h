@@ -20,7 +20,6 @@ void Gyro_cal() {
         gyro_z_cal = 0;
         cal_int = 0;
     }
-
     delay(3);
     if (millis() - LED_TIMER > 200) {
         digitalWrite(LED, LED_STATE);

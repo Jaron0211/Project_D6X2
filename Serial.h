@@ -52,6 +52,7 @@ struct DEBUG_COLLECTION {
     float PITCH_I_VAL;
     float PITCH_D_VAL;
     int PITCH_PID_OUTPUT;
+    long IMU_read_frequence;
 }data;
 
 void DEBUG_PRINT() {
@@ -79,6 +80,8 @@ void DEBUG_PRINT() {
     Serial.print(data.PITCH_D_VAL);
     Serial.print(",");
     Serial.print(data.PITCH_PID_OUTPUT);
-    Serial.println(",");
+    Serial.print(",");
+    Serial.print(data.IMU_read_frequence);
+    Serial.println();
   
 }

@@ -35,14 +35,12 @@ void setup_mpu_6050_registers() {
 
 void read_mpu_6050_data() {
 
-  if (!IMU_request) {
+
     Wire.beginTransmission(0x68);
     Wire.write(0x3B);
     Wire.endTransmission();
     Wire.requestFrom(0x68, 14);
-    IMU_request = 1;
-    IMU_request_timer = millis();
-  } else {
+
     if (Wire.available() >= 14) {
       acc_x = Wire.read() << 8 | Wire.read();
       acc_y = Wire.read() << 8 | Wire.read();
@@ -51,11 +49,9 @@ void read_mpu_6050_data() {
       gyro_x = Wire.read() << 8 | Wire.read();
       gyro_y = Wire.read() << 8 | Wire.read();
       gyro_z = Wire.read() << 8 | Wire.read();
-      IMU_request = 0;
-      IMU_read_frequence = 1 / (millis() - IMU_request_timer) * 1000;
-    } else if (millis() - IMU_request_timer > 5000) {
-      IMU_fail_safe = 1;
-    }
+      IMU_read_frequence = 1000000/(micros() - IMU_request_timer);
+      data.IMU_read_frequence = IMU_read_frequence;
+      IMU_request_timer = micros();
   }
 }
 
@@ -67,9 +63,9 @@ void angle_read() {
   gyro_y -= gyro_y_cal;
   gyro_z -= gyro_z_cal;
 
-  gyro_pitch = gyro_pitch * 0.8 + (-cos(IMU_ROTATION_ANGLE) * gyro_x + sin(IMU_ROTATION_ANGLE) * gyro_y) / 65.5 * 0.2;
-  gyro_roll = gyro_roll * 0.8 + (-sin(IMU_ROTATION_ANGLE) * gyro_x + cos(IMU_ROTATION_ANGLE) * gyro_y) / 65.5 * 0.2;
-  gyro_yaw = gyro_yaw * 0.8 + gyro_z / 65.5 * 0.2;
+  gyro_pitch = gyro_pitch * 0.8 + ((-cos(IMU_ROTATION_ANGLE) * gyro_x + sin(IMU_ROTATION_ANGLE) * gyro_y) / 65.5 )* 0.2;
+  gyro_roll = gyro_roll * 0.8 + ((-sin(IMU_ROTATION_ANGLE) * gyro_x + cos(IMU_ROTATION_ANGLE) * gyro_y) / 65.5 )* 0.2;
+  gyro_yaw = gyro_yaw * 0.8 + (gyro_z / 65.5 )* 0.2;
 
   if (gyro_yaw < -180) {
       gyro_yaw = 180;
@@ -78,12 +74,12 @@ void angle_read() {
       gyro_yaw = -180;
   }
 
-  data.GYRO_PITCH = gyro_pitch;
-  data.GYRO_ROLL = gyro_roll;
-  data.GYRO_YAW = gyro_yaw;
+  data.GYRO_PITCH = gyro_x;
+  data.GYRO_ROLL = gyro_y;
+  data.GYRO_YAW = gyro_z;
 
-  angle_pitch = ( angle_pitch + gyro_x * 0.0000611 ) ;//1/250hz/65.5lsb/s)
-  angle_roll = ( angle_roll + gyro_y * 0.0000611 ) ;
+  angle_pitch += gyro_x * 1 / IMU_read_frequence /65.5;// 1/250hz/65.5lsb/s)
+  angle_roll += gyro_y * 1 / IMU_read_frequence / 65.5;
 
   data.ANGLE_PITCH = angle_pitch;
   data.ANGLE_ROLL = angle_roll;
@@ -101,8 +97,8 @@ void angle_read() {
     angle_yaw += gyro_z * 0.0000611 ;
   }
 
-  angle_roll -= angle_pitch * sin(gyro_z * 0.0000611 / 180 * 3.1416);
-  angle_pitch += angle_roll * sin(gyro_z * 0.0000611 / 180 * 3.1416);
+  angle_roll -= angle_pitch * sin(radians( gyro_z * 0.0000611));
+  angle_pitch += angle_roll * sin(radians(gyro_z * 0.0000611));
 
   acc_total_vector = sqrt((acc_x * acc_x) + (acc_y * acc_y) + (acc_z * acc_z));
 
@@ -128,8 +124,8 @@ void angle_read() {
     YAW = angle_yaw ;
     */
 
-    PITCH = (/*-cos(IMU_ROTATION_ANGLE) * angle_pitch + */ sin(IMU_ROTATION_ANGLE) * angle_roll);// *0.5 + PITCH * 0.5;
-    ROLL = (-sin(IMU_ROTATION_ANGLE) * angle_pitch /*+ cos(IMU_ROTATION_ANGLE) * angle_roll*/);// *0.5 + ROLL * 0.5;
+    PITCH = (-cos(IMU_ROTATION_ANGLE) * angle_pitch +  sin(IMU_ROTATION_ANGLE) * angle_roll);// *0.5 + PITCH * 0.5;
+    ROLL = (-sin(IMU_ROTATION_ANGLE) * angle_pitch + cos(IMU_ROTATION_ANGLE) * angle_roll);// *0.5 + ROLL * 0.5;
     YAW = angle_yaw ;
 
     data.PITCH = PITCH;

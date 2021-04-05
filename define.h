@@ -11,7 +11,7 @@ unsigned long LED_TIMER = 0;
 
 //===========================IMU===========================//
 double IMU_ROTATION_DEGREE = 90;
-double IMU_ROTATION_ANGLE = IMU_ROTATION_DEGREE / 180 * PI;
+double IMU_ROTATION_ANGLE = radians(IMU_ROTATION_DEGREE);
 
 long gyro_x, gyro_y, gyro_z;
 long acc_x, acc_y, acc_z, acc_total_vector, acc_total_vector_level;
@@ -33,6 +33,7 @@ bool set_gyro_angles;
 
 bool IMU_request;
 unsigned long IMU_request_timer;
+unsigned long IMU_GET_TIMER;
 long IMU_read_frequence;
 
 bool IMU_fail_safe = 0;
