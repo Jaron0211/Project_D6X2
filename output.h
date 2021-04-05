@@ -19,6 +19,7 @@ void STABLE() {
         }
         if(millis() - ARM_TIMER > 3000){
           ARM = 1;
+          set_gyro_angles = 0;
         }
       }else{
         if(!((CH[2]<1200)and(CH[3]<1200))){
@@ -30,17 +31,36 @@ void STABLE() {
       }
       
       if (ARM) {
-        pos_value[0] = constrain(map(CH[1], CH1_MIN, CH1_MAX, MAX_ANGLE, -MAX_ANGLE), -MAX_ANGLE, MAX_ANGLE);
-        pos_value[1] = constrain(map(CH[0], CH2_MIN, CH2_MAX, MAX_ANGLE, -MAX_ANGLE), -MAX_ANGLE, MAX_ANGLE);
-        pos_value[2] = constrain(map(CH[2], CH3_MIN, CH3_MAX, MIN_SPEED, MAX_SPEED), MIN_SPEED, MAX_SPEED);
-        pos_value[3] = constrain(map(CH[3], CH4_MIN, CH4_MAX, MAX_YAW_ANGULAR, -MAX_YAW_ANGULAR), -MAX_YAW_ANGULAR, MAX_YAW_ANGULAR);
+
+          if (abs(CH[1] - 1500) > 30) {
+              pos_value[0] = -(CH[1] - 1500);
+          }
+          else {
+              pos_value[0] = 0;
+          }
+
+          if (abs(CH[0] - 1500) > 30) {
+              pos_value[1] = -(CH[0] - 1500);
+          }
+          else {
+              pos_value[1] = 0;
+          }
+
+          pos_value[2] = constrain(CH[2], MIN_SPEED, MAX_SPEED);
+
+          if (abs(CH[3] - 1500) > 30) {
+              pos_value[3] = CH[3] - 1500;
+          }
+          else {
+              pos_value[3] = 0;
+          }
 
         if (pos_value[2] > 1200) {
           ang_control(pos_value[0], pos_value[1], pos_value[3], 0);
-          M1_VAL = constrain((pos_value[2] + PITCH_PID_OUTPUT /*- ROLL_PID_OUTPUT + YAW_PID_OUTPUT*/), START_SPEED, MAX_SPEED);
-          M2_VAL = constrain((pos_value[2] - PITCH_PID_OUTPUT /*+ ROLL_PID_OUTPUT + YAW_PID_OUTPUT*/), START_SPEED, MAX_SPEED);
-          M3_VAL = constrain((pos_value[2] + PITCH_PID_OUTPUT /*+ ROLL_PID_OUTPUT - YAW_PID_OUTPUT*/), START_SPEED, MAX_SPEED);
-          M4_VAL = constrain((pos_value[2] - PITCH_PID_OUTPUT /*- ROLL_PID_OUTPUT - YAW_PID_OUTPUT*/), START_SPEED, MAX_SPEED);
+          M1_VAL = constrain((pos_value[2] + PITCH_PID_OUTPUT - ROLL_PID_OUTPUT + YAW_PID_OUTPUT), START_SPEED, MAX_SPEED);
+          M2_VAL = constrain((pos_value[2] - PITCH_PID_OUTPUT + ROLL_PID_OUTPUT + YAW_PID_OUTPUT), START_SPEED, MAX_SPEED);
+          M3_VAL = constrain((pos_value[2] + PITCH_PID_OUTPUT + ROLL_PID_OUTPUT - YAW_PID_OUTPUT), START_SPEED, MAX_SPEED);
+          M4_VAL = constrain((pos_value[2] - PITCH_PID_OUTPUT - ROLL_PID_OUTPUT - YAW_PID_OUTPUT), START_SPEED, MAX_SPEED);
 
         } else {
           ang_control(0, 0, 0, 1);

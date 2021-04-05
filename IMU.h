@@ -67,16 +67,23 @@ void angle_read() {
   gyro_y -= gyro_y_cal;
   gyro_z -= gyro_z_cal;
 
-  gyro_pitch = gyro_pitch * 0.7 + (-cos(IMU_ROTATION_ANGLE) * gyro_x + sin(IMU_ROTATION_ANGLE) * gyro_y) / 65.5 * 0.3;
-  gyro_roll = gyro_roll * 0.7 + (-sin(IMU_ROTATION_ANGLE) * gyro_x + cos(IMU_ROTATION_ANGLE) * gyro_y) / 65.5 * 0.3;
-  gyro_yaw = gyro_yaw * 0.7 + gyro_z / 65.5 * 0.3;
+  gyro_pitch = gyro_pitch * 0.8 + (-cos(IMU_ROTATION_ANGLE) * gyro_x + sin(IMU_ROTATION_ANGLE) * gyro_y) / 65.5 * 0.2;
+  gyro_roll = gyro_roll * 0.8 + (-sin(IMU_ROTATION_ANGLE) * gyro_x + cos(IMU_ROTATION_ANGLE) * gyro_y) / 65.5 * 0.2;
+  gyro_yaw = gyro_yaw * 0.8 + gyro_z / 65.5 * 0.2;
+
+  if (gyro_yaw < -180) {
+      gyro_yaw = 180;
+  }
+  else if (gyro_yaw > 180) {
+      gyro_yaw = -180;
+  }
 
   data.GYRO_PITCH = gyro_pitch;
   data.GYRO_ROLL = gyro_roll;
   data.GYRO_YAW = gyro_yaw;
 
-  angle_pitch = ( angle_pitch + gyro_x * 0.0000611 ) * 1 + angle_pitch * 0;//1/250hz/65.5lsb/s)
-  angle_roll = ( angle_roll + gyro_y * 0.0000611 ) * 1 + angle_roll * 0;
+  angle_pitch = ( angle_pitch + gyro_x * 0.0000611 ) ;//1/250hz/65.5lsb/s)
+  angle_roll = ( angle_roll + gyro_y * 0.0000611 ) ;
 
   data.ANGLE_PITCH = angle_pitch;
   data.ANGLE_ROLL = angle_roll;
@@ -94,8 +101,8 @@ void angle_read() {
     angle_yaw += gyro_z * 0.0000611 ;
   }
 
-  angle_roll -= angle_pitch * sin(gyro_z * 0.000001066);
-  angle_pitch += angle_roll * sin(gyro_z * 0.000001066);
+  angle_roll -= angle_pitch * sin(gyro_z * 0.0000611 / 180 * 3.1416);
+  angle_pitch += angle_roll * sin(gyro_z * 0.0000611 / 180 * 3.1416);
 
   acc_total_vector = sqrt((acc_x * acc_x) + (acc_y * acc_y) + (acc_z * acc_z));
 
@@ -112,8 +119,8 @@ void angle_read() {
 
   if (set_gyro_angles) {
 
-    angle_pitch = angle_pitch * 0.999 + angle_pitch_acc * 0.001;
-    angle_roll = angle_roll * 0.999 + angle_roll_acc * 0.001;
+    angle_pitch = angle_pitch * 0.9995 + angle_pitch_acc * 0.0005;
+    angle_roll = angle_roll * 0.9995 + angle_roll_acc * 0.0005;
 
     /*
     PITCH = angle_roll;// * 0.2 + PITCH * 0.8;
@@ -121,8 +128,8 @@ void angle_read() {
     YAW = angle_yaw ;
     */
 
-    PITCH = (-cos(IMU_ROTATION_ANGLE) * angle_pitch + sin(IMU_ROTATION_ANGLE) * angle_roll);// *0.5 + PITCH * 0.5;
-    ROLL = (-sin(IMU_ROTATION_ANGLE) * angle_pitch + cos(IMU_ROTATION_ANGLE) * angle_roll);// *0.5 + ROLL * 0.5;
+    PITCH = (/*-cos(IMU_ROTATION_ANGLE) * angle_pitch + */ sin(IMU_ROTATION_ANGLE) * angle_roll);// *0.5 + PITCH * 0.5;
+    ROLL = (-sin(IMU_ROTATION_ANGLE) * angle_pitch /*+ cos(IMU_ROTATION_ANGLE) * angle_roll*/);// *0.5 + ROLL * 0.5;
     YAW = angle_yaw ;
 
     data.PITCH = PITCH;
@@ -138,8 +145,8 @@ void angle_read() {
   } else {
     angle_pitch = angle_pitch_acc;
     angle_roll = angle_roll_acc;
-    PITCH = -cos(IMU_ROTATION_ANGLE) * angle_pitch - sin(IMU_ROTATION_ANGLE) * angle_roll;
-    ROLL = -sin(IMU_ROTATION_ANGLE) * angle_pitch - cos(IMU_ROTATION_ANGLE) * angle_roll;
+    PITCH = -cos(IMU_ROTATION_ANGLE) * angle_pitch + sin(IMU_ROTATION_ANGLE) * angle_roll;
+    ROLL = -sin(IMU_ROTATION_ANGLE) * angle_pitch + cos(IMU_ROTATION_ANGLE) * angle_roll;
     YAW = 0;
     set_gyro_angles = true;
   }

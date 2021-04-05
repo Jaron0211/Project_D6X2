@@ -39,13 +39,13 @@ bool IMU_fail_safe = 0;
 
 //===========================POSE===========================//
 //PID
-float CONTROL_GAIN = 3;
+float CONTROL_GAIN = 5;
 
-float POS_P = 2.5;
-float POS_I = 1;
-float POS_D = 0;
+float POS_P = 0.4;
+float POS_I = 0.1;
+float POS_D = 3;
 
-int POS_I_MAX = 100;
+int POS_I_MAX = 50;
 int POS_D_MAX = 100;
 int GYRO_PID_MAX = 500;
 
@@ -81,6 +81,8 @@ float ANG_YAW_P_VAL , ANG_YAW_I_VAL , ANG_YAW_D_VAL;
 float ANG_PITCH_error_pre, ANG_ROLL_error_pre, ANG_YAW_error_pre;
 
 long ANG_PITCH_PID_OUTPUT, ANG_ROLL_PID_OUTPUT, ANG_YAW_PID_OUTPUT;
+
+unsigned long PID_LOOP_TIMER = 0;
 
 //===========================RC===========================//
 int MODE = 1;
