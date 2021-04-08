@@ -42,8 +42,8 @@ bool IMU_fail_safe = 0;
 //PID
 float CONTROL_GAIN = 5;
 
-float POS_P = 0.1;
-float POS_I = 0.001;
+float POS_P = 0.15;
+double POS_I = 0.001;
 float POS_D = 1;
 
 int POS_I_MAX = 100;
