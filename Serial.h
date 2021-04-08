@@ -14,6 +14,7 @@ void Serial_RX() {
     if (!RX_END) {
       DATA += INCOME_CHAR;
     } else {
+
       int MARK1 = 1;
       int MARK2 = 0;
       int i = 0;
@@ -22,11 +23,12 @@ void Serial_RX() {
         if (MARK2 == -1)break;
         String ia = DATA.substring(MARK1, MARK2);
         PID_VAL[i] = ia.toFloat();
-        Serial.println(PID_VAL[i]);
+        //Serial.println(PID_VAL[i]);
         MARK1 = MARK2 + 1;
         i++;
         if (i == 3)break;
       }
+      Serial.println(DATA);
       POS_P = PID_VAL[0];
       POS_I = PID_VAL[1];
       POS_D = PID_VAL[2];

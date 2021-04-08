@@ -1,5 +1,6 @@
 #include <Wire.h>
 #include <Servo.h>
+#include <EEPROM.h>
 
 #include "define.h"
 #include "Serial.h"
@@ -79,11 +80,7 @@ void loop() {
             
             DEBUG_PRINT();
             Serial_RX();
-
-
             angle_read();
-
-
 
             switch (MODE){
                 default:

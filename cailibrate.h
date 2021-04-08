@@ -14,14 +14,29 @@ void Gyro_cal() {
     gyro_z_cal += gyro_z;
     acc_total_vector_level += sqrt((acc_x * acc_x) + (acc_y * acc_y) + (acc_z * acc_z));
 
-    if ((abs(gyro_x) > 400) or (abs(gyro_y) > 400 )or (abs(gyro_z) > 400)) {
+    if (gyro_x - gyro_x_cal / (cal_int + 1) > 400) {
         gyro_x_cal = 0;
         gyro_y_cal = 0;
         gyro_z_cal = 0;
         cal_int = 0;
     }
+
+    if (gyro_y - gyro_y_cal / (cal_int + 1) > 400) {
+        gyro_x_cal = 0;
+        gyro_y_cal = 0;
+        gyro_z_cal = 0;
+        cal_int = 0;
+    }
+
+    if (gyro_z - gyro_z_cal / (cal_int + 1) > 400) {
+        gyro_x_cal = 0;
+        gyro_y_cal = 0;
+        gyro_z_cal = 0;
+        cal_int = 0;
+    }
+
     delay(3);
-    if (millis() - LED_TIMER > 200) {
+    if (millis() - LED_TIMER > 50) {
         digitalWrite(LED, LED_STATE);
         LED_STATE = !LED_STATE;
         LED_TIMER = millis();

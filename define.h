@@ -42,11 +42,11 @@ bool IMU_fail_safe = 0;
 //PID
 float CONTROL_GAIN = 5;
 
-float POS_P = 0.4;
-float POS_I = 0.1;
-float POS_D = 3;
+float POS_P = 0.1;
+float POS_I = 0.001;
+float POS_D = 1;
 
-int POS_I_MAX = 50;
+int POS_I_MAX = 100;
 int POS_D_MAX = 100;
 int GYRO_PID_MAX = 500;
 
