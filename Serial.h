@@ -41,22 +41,6 @@ void Serial_RX() {
 }
 
 
-struct DEBUG_COLLECTION {
-    float GYRO_PITCH;
-    float GYRO_ROLL;
-    float GYRO_YAW;
-    float ANGLE_PITCH;
-    float ANGLE_ROLL;
-    float PITCH;
-    float ROLL;
-    float YAW;
-    float PITCH_P_VAL;
-    float PITCH_I_VAL;
-    float PITCH_D_VAL;
-    int PITCH_PID_OUTPUT;
-    long IMU_read_frequence;
-}data;
-
 void DEBUG_PRINT() {
     
     Serial.print(data.GYRO_PITCH);
@@ -86,4 +70,19 @@ void DEBUG_PRINT() {
     Serial.print(data.IMU_read_frequence);
     Serial.println();
   
+}
+
+void DEBUG_PRINT_CHANNAL() {
+    Serial.print(CH[0]);
+    Serial.print(",");
+    Serial.print(CH[1]);
+    Serial.print(",");
+    Serial.print(CH[2]);
+    Serial.print(",");
+    Serial.print(CH[3]);
+    Serial.print(",");
+    Serial.print(CH[4]);
+    Serial.print(",");
+    Serial.print(CH[5]);
+    Serial.print("\r\n");
 }

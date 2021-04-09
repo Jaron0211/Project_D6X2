@@ -1,8 +1,1 @@
-int CH1_MAX = 1932 , CH1_MIN = 1108;
-int CH2_MAX = 1932 , CH2_MIN = 1108;
-int CH3_MAX = 1932 , CH3_MIN = 1108;
-int CH4_MAX = 1932 , CH4_MIN = 1108;
-int CH5_MAX = 2000 , CH5_MIN = 1000;
-int CH6_MAX = 2000 , CH6_MIN = 1000;
 
-int CH[6]={0,0,0,0,0,0};

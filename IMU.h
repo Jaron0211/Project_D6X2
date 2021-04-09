@@ -40,7 +40,12 @@ void read_mpu_6050_data() {
     Wire.write(0x3B);
     Wire.endTransmission();
     Wire.requestFrom(0x68, 14);
-
+    if (micros() - IMU_request_timer > 50000) {
+        IMU_fail_safe = 1;
+    }
+    else {
+        IMU_fail_safe = 0;
+    }
     if (Wire.available() >= 14) {
       acc_x = Wire.read() << 8 | Wire.read();
       acc_y = Wire.read() << 8 | Wire.read();

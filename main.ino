@@ -4,20 +4,12 @@
 
 #include "define.h"
 #include "Serial.h"
-#include "RC.h"
 #include "IMU.h"
 #include "POSE.h"
 #include "cailibrate.h"
 #include "output.h"
+
 #include "sys_data.h"
-
-bool terminal_mode = 0;
-bool rotor_enable = 1;
-
-unsigned long channal_read_timer;
-unsigned long ch1_timer, ch2_timer, ch3_timer, ch4_timer, ch5_timer, ch6_timer;
-
-boolean ch1_s, ch2_s, ch3_s, ch4_s, ch5_s, ch6_s;
 
 void setup() {
 
@@ -38,6 +30,8 @@ void setup() {
 	Gyro_cal();
 	angle_read();
 
+	digitalWrite(LED, HIGH);
+
 	//ISR SETUP
 	PCICR |= (1 << PCIE0);
 	DDRB = B00000000;
@@ -50,20 +44,8 @@ void setup() {
 
 	PID_LOOP_TIMER = millis();
 
-	COLLECT_DATA();
-	WRITE_EEPROM();
-	delay(2000);
 	READ_EEPROM();
-	Serial.println(__FILE__);
-	Serial.println(__TIME__);
-	while (1) {
-		Serial.println("OK");
-		Serial.println(memory.POS_P);
-		Serial.println(memory.POS_I, 5);
-		Serial.println(memory.POS_D);
-		delay(1000);
-	}
-
+	digitalWrite(LED, LOW);
 }
 
 void loop() {
@@ -95,12 +77,20 @@ void loop() {
 		//caculation
 		if (micros() - esc_start_timer > 2500) {
 
-			DEBUG_PRINT();
+			//DEBUG_PRINT();
+			DEBUG_PRINT_CHANNAL();
 			Serial_RX();
 			angle_read();
+			FAILSAFE();
 
 			switch (MODE) {
 			default:
+				M1_VAL = MIN_SPEED;
+				M2_VAL = MIN_SPEED;
+				M3_VAL = MIN_SPEED;
+				M4_VAL = MIN_SPEED;
+				break;
+			case 0:
 				M1_VAL = MIN_SPEED;
 				M2_VAL = MIN_SPEED;
 				M3_VAL = MIN_SPEED;
@@ -131,6 +121,7 @@ ISR(PCINT0_vect) {
 		ch1_s = 0;
 		CH[0] = channal_read_timer - ch1_timer;
 	}
+
 	//ch2
 	if (PINB & B00010000) {
 		if (ch2_s == 0) {
@@ -142,6 +133,7 @@ ISR(PCINT0_vect) {
 		ch2_s = 0;
 		CH[1] = channal_read_timer - ch2_timer;
 	}
+
 	//ch3
 	if (PINB & B00001000) {
 		if (ch3_s == 0) {
@@ -153,6 +145,8 @@ ISR(PCINT0_vect) {
 		ch3_s = 0;
 		CH[2] = channal_read_timer - ch3_timer;
 	}
+
+
 	//ch4
 	if (PINB & B00000100) {
 		if (ch4_s == 0) {
@@ -164,6 +158,8 @@ ISR(PCINT0_vect) {
 		ch4_s = 0;
 		CH[3] = channal_read_timer - ch4_timer;
 	}
+
+
 	//ch5
 	if (PINB & B00000010) {
 		if (ch5_s == 0) {
@@ -175,6 +171,11 @@ ISR(PCINT0_vect) {
 		ch5_s = 0;
 		CH[4] = channal_read_timer - ch5_timer;
 	}
+
+	if ((channal_read_timer - ch5_timer < 900) or (channal_read_timer - ch5_timer > 2200)) {
+		SIG_fail_safe = 1;
+	}
+
 	//ch6
 	if (PINB & B00000001) {
 		if (ch6_s == 0) {
@@ -186,4 +187,5 @@ ISR(PCINT0_vect) {
 		ch6_s = 0;
 		CH[5] = channal_read_timer - ch6_timer;
 	}
+
 }

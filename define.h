@@ -9,6 +9,24 @@
 int LED = A2;
 unsigned long LED_TIMER = 0;
 
+//===========================ISR===========================//
+
+unsigned long channal_read_timer;
+unsigned long ch1_timer, ch2_timer, ch3_timer, ch4_timer, ch5_timer, ch6_timer;
+
+boolean ch1_s, ch2_s, ch3_s, ch4_s, ch5_s, ch6_s;
+
+
+//===========================FAILSAFE===========================//
+
+int FAIL_CODE = 0x00;
+
+int SIG_fail_safe_counter = 0;
+bool SIG_fail_safe = 0;
+unsigned long SIG_fail_safe_timer = 0;
+
+bool IMU_fail_safe = 0;
+
 //===========================IMU===========================//
 double IMU_ROTATION_DEGREE = 90;
 double IMU_ROTATION_ANGLE = radians(IMU_ROTATION_DEGREE);
@@ -35,8 +53,6 @@ bool IMU_request;
 unsigned long IMU_request_timer;
 unsigned long IMU_GET_TIMER;
 long IMU_read_frequence;
-
-bool IMU_fail_safe = 0;
 
 //===========================POSE===========================//
 //PID
@@ -88,6 +104,14 @@ unsigned long PID_LOOP_TIMER = 0;
 //===========================RC===========================//
 int MODE = 1;
 
+int CH1_MAX = 1932, CH1_MIN = 1108;
+int CH2_MAX = 1932, CH2_MIN = 1108;
+int CH3_MAX = 1932, CH3_MIN = 1108;
+int CH4_MAX = 1932, CH4_MIN = 1108;
+int CH5_MAX = 2000, CH5_MIN = 1000;
+int CH6_MAX = 2000, CH6_MIN = 1000;
+
+int CH[6] = { 0,0,0,0,0,0 };
 
 //===========================Serial===========================//
 float PID_VAL[3] = {POS_P, POS_I, POS_D};
@@ -103,6 +127,22 @@ bool RX_END = 0;
 bool debug = 0;
 int DEBUGGING_DATA[30];
 
+struct DEBUG_COLLECTION {
+    float GYRO_PITCH;
+    float GYRO_ROLL;
+    float GYRO_YAW;
+    float ANGLE_PITCH;
+    float ANGLE_ROLL;
+    float PITCH;
+    float ROLL;
+    float YAW;
+    float PITCH_P_VAL;
+    float PITCH_I_VAL;
+    float PITCH_D_VAL;
+    int PITCH_PID_OUTPUT;
+    long IMU_read_frequence;
+}data;
+
 //===========================OUTPUT===========================//
 int M1_VAL, M2_VAL, M3_VAL, M4_VAL, M5_VAL, M6_VAL;
 
@@ -112,3 +152,30 @@ unsigned long esc_ch_timer[6];
 
 unsigned long ARM_TIMER;
 boolean ARM;
+
+//===========================sys_data===========================//
+
+typedef struct EEPROM_STRUCT {
+
+	float CONTROL_GAIN;
+
+	float POS_P;
+	double POS_I;
+	float POS_D;
+
+	int POS_I_MAX;
+	int POS_D_MAX;
+	int GYRO_PID_MAX;
+
+	float YAW_P;
+	float YAW_I;
+	float YAW_D;
+	int YAW_I_MAX;
+	int YAW_D_MAX;
+
+	float HEIGHT_P;
+	float HEIGHT_I;
+	float HEIGHT_D;
+
+	double IMU_ROTATION_DEGREE;
+}; EEPROM_STRUCT memory;
