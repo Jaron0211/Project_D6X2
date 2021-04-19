@@ -19,7 +19,7 @@ boolean ch1_s, ch2_s, ch3_s, ch4_s, ch5_s, ch6_s;
 
 //===========================FAILSAFE===========================//
 
-int FAIL_CODE = 0x00;
+int FAIL_CODE = 0;
 
 int SIG_fail_safe_counter = 0;
 bool SIG_fail_safe = 0;
@@ -179,3 +179,5 @@ typedef struct EEPROM_STRUCT {
 
 	double IMU_ROTATION_DEGREE;
 }; EEPROM_STRUCT memory;
+
+bool have_written = 1;

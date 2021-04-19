@@ -11,6 +11,8 @@
 
 #include "sys_data.h"
 
+bool LED_STATE;
+
 void setup() {
 
 	pinMode(LED, OUTPUT);
@@ -46,6 +48,7 @@ void setup() {
 
 	READ_EEPROM();
 	digitalWrite(LED, LOW);
+	LED_STATE = 0;
 }
 
 void loop() {
@@ -78,10 +81,22 @@ void loop() {
 		if (micros() - esc_start_timer > 2500) {
 
 			//DEBUG_PRINT();
-			DEBUG_PRINT_CHANNAL();
+			//DEBUG_PRINT_CHANNAL();
 			Serial_RX();
 			angle_read();
 			FAILSAFE();
+
+			
+			if (FAIL_CODE != 0) {
+				Serial.println(FAIL_CODE, HEX);
+			}
+			
+
+			if (!ARM and !have_written) {
+				WRITE_EEPROM();
+				Serial.println("DATA SAVED");
+				have_written = 1;
+			}
 
 			switch (MODE) {
 			default:
@@ -95,6 +110,11 @@ void loop() {
 				M2_VAL = MIN_SPEED;
 				M3_VAL = MIN_SPEED;
 				M4_VAL = MIN_SPEED;
+				if (millis() - LED_TIMER > 500) {
+					digitalWrite(LED, LED_STATE);
+					LED_STATE = !LED_STATE;
+					LED_TIMER = millis();
+				}
 				break;
 			case 1:
 				STABLE();

@@ -95,25 +95,19 @@ void FAILSAFE() {
 	else if ((micros() - ch3_timer) > 25000) { SIG_fail_safe_counter += 1; }
 	else if ((micros() - ch4_timer) > 25000) { SIG_fail_safe_counter += 1; }
 	//check channal read wide proprely
-	else if ((CH[0] < 900) or (CH[0] > 2200)) { SIG_fail_safe_counter += 1; }
-	else if ((CH[1] < 900) or (CH[1] > 2200)) { SIG_fail_safe_counter += 1; }
-	else if ((CH[2] < 900) or (CH[2] > 2200)) { SIG_fail_safe_counter += 1; }
-	else if ((CH[3] < 900) or (CH[3] > 2200)) { SIG_fail_safe_counter += 1; }
+	else if ((CH[0] < 900) or (CH[0] > 2200)) {	SIG_fail_safe_counter += 1;	}
+	else if ((CH[1] < 900) or (CH[1] > 2200)) {	SIG_fail_safe_counter += 1; }
+	else if ((CH[2] < 900) or (CH[2] > 2200)) {	SIG_fail_safe_counter += 1;	}
+	else if ((CH[3] < 900) or (CH[3] > 2200)) {	SIG_fail_safe_counter += 1;	}
 	else {SIG_fail_safe_timer = millis();}
 
-	if (millis() - SIG_fail_safe_timer > 5000) {
-		SIG_fail_safe_counter = 0;
-	}
-	else if (SIG_fail_safe_counter > 100) {
-		SIG_fail_safe = 1;
-	}
+	if (millis() - SIG_fail_safe_timer < 2000) {SIG_fail_safe_counter = 0;}
+	
+	if (SIG_fail_safe_counter > 30) { SIG_fail_safe = 1;}
+	else { SIG_fail_safe = 0; }
 
-	if (SIG_fail_safe) FAIL_CODE = 0x01;
-	if (IMU_fail_safe) FAIL_CODE = 0x02;
-
-	if (FAIL_CODE != 0) {
-		MODE = 0;
-	}
-	Serial.println(FAIL_CODE, HEX);
+	if (SIG_fail_safe) { FAIL_CODE = 0x07; }
+	else if (IMU_fail_safe) { FAIL_CODE = 0x08; }
+	else { FAIL_CODE = 0x00; }
 
 }

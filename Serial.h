@@ -33,6 +33,7 @@ void Serial_RX() {
       POS_I = PID_VAL[1];
       POS_D = PID_VAL[2];
       DATA = "";
+      have_written = 0;
       GYR_PID_ADJUST = 0;
       RX_END = 0;
     }
