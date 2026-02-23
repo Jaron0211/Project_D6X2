@@ -12,8 +12,6 @@ void Gyro_cal() {
     gyro_x_cal += gyro_x;
     gyro_y_cal += gyro_y;
     gyro_z_cal += gyro_z;
-    acc_total_vector_level += sqrt((acc_x * acc_x) + (acc_y * acc_y) + (acc_z * acc_z));
-
     if (gyro_x - gyro_x_cal / (cal_int + 1) > 400) {
         gyro_x_cal = 0;
         gyro_y_cal = 0;
@@ -35,6 +33,7 @@ void Gyro_cal() {
         cal_int = 0;
     }
 
+    wdt_reset();
     delay(3);
     if (millis() - LED_TIMER > 50) {
         digitalWrite(LED, LED_STATE);
@@ -45,8 +44,6 @@ void Gyro_cal() {
   gyro_x_cal /= 2000;
   gyro_y_cal /= 2000;
   gyro_z_cal /= 2000;
-  acc_total_vector_level /= 2000;
-
 }
 
 void Acc_cal() {
@@ -127,7 +124,7 @@ void Acc_cal() {
       case 6:
         for (int cal_int = 0; cal_int < 333 ; cal_int ++) {
           read_mpu_6050_data();
-          Acc_down += acc_y;
+          Acc_down += acc_z;
           delay(3);
         }
         Acc_down = Acc_down / 333;

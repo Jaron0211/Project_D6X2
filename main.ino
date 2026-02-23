@@ -1,6 +1,7 @@
 #include <Wire.h>
 #include <Servo.h>
 #include <EEPROM.h>
+#include <avr/wdt.h>
 
 #include "define.h"
 #include "Serial.h"
@@ -8,6 +9,7 @@
 #include "POSE.h"
 #include "cailibrate.h"
 #include "output.h"
+#include "battery.h"
 
 #include "sys_data.h"
 
@@ -29,7 +31,15 @@ void setup() {
 	PORTD &= B00000011;
 
 	setup_mpu_6050_registers();
+
+	// Pre-compute IMU rotation constants (before calibration uses them)
+	imu_sin = sin(radians(IMU_ROTATION_DEGREE));
+	imu_cos = cos(radians(IMU_ROTATION_DEGREE));
+
 	Gyro_cal();
+
+	// Initialize AHRS timer before first angle_read
+	ahrs_timer = micros();
 	angle_read();
 
 	digitalWrite(LED, HIGH);
@@ -44,53 +54,46 @@ void setup() {
 
 	digitalWrite(LED, LOW);
 
-	PID_LOOP_TIMER = millis();
+	PID_LOOP_TIMER = micros();
 
 	READ_EEPROM();
+	battery_init();
 	digitalWrite(LED, LOW);
 	LED_STATE = 0;
+
+	wdt_enable(WDTO_250MS);
 }
 
 void loop() {
+	wdt_reset();
 
-	if (micros() - esc_start_timer >= 20000) {
+	unsigned long esc_elapsed = micros() - esc_start_timer;
+
+	if (esc_elapsed >= 20000) {
 		PORTD |= B11111100;
 		esc_start_timer = micros();
 	}
 	else {
-		//esc signal output
-		if (micros() - esc_start_timer >= M1_VAL) {
-			PORTD &= B11111011;
-		}
-		if (micros() - esc_start_timer >= M2_VAL) {
-			PORTD &= B11110111;
-		}
-		if (micros() - esc_start_timer >= M3_VAL) {
-			PORTD &= B11101111;
-		}
-		if (micros() - esc_start_timer >= M4_VAL) {
-			PORTD &= B11011111;
-		}
-		if (micros() - esc_start_timer >= M5_VAL) {
-			PORTD &= B10111111;
-		}
-		if (micros() - esc_start_timer >= M6_VAL) {
-			PORTD &= B01111111;
-		}
-		//caculation
-		if (micros() - esc_start_timer > 2500) {
+		//esc signal output (single timestamp to minimize jitter)
+		if (esc_elapsed >= M1_VAL) { PORTD &= B11111011; }
+		if (esc_elapsed >= M2_VAL) { PORTD &= B11110111; }
+		if (esc_elapsed >= M3_VAL) { PORTD &= B11101111; }
+		if (esc_elapsed >= M4_VAL) { PORTD &= B11011111; }
+		if (esc_elapsed >= M5_VAL) { PORTD &= B10111111; }
+		if (esc_elapsed >= M6_VAL) { PORTD &= B01111111; }
+		//calculation
+		if (esc_elapsed > 2500) {
 
 			//DEBUG_PRINT();
 			//DEBUG_PRINT_CHANNAL();
 			Serial_RX();
 			angle_read();
+			battery_update();
 			FAILSAFE();
 
-			
 			if (FAIL_CODE != 0) {
 				Serial.println(FAIL_CODE, HEX);
 			}
-			
 
 			if (!ARM and !have_written) {
 				WRITE_EEPROM();
@@ -166,7 +169,6 @@ ISR(PCINT0_vect) {
 		CH[2] = channal_read_timer - ch3_timer;
 	}
 
-
 	//ch4
 	if (PINB & B00000100) {
 		if (ch4_s == 0) {
@@ -179,7 +181,6 @@ ISR(PCINT0_vect) {
 		CH[3] = channal_read_timer - ch4_timer;
 	}
 
-
 	//ch5
 	if (PINB & B00000010) {
 		if (ch5_s == 0) {
@@ -190,10 +191,6 @@ ISR(PCINT0_vect) {
 	else if (ch5_s == 1) {
 		ch5_s = 0;
 		CH[4] = channal_read_timer - ch5_timer;
-	}
-
-	if ((channal_read_timer - ch5_timer < 900) or (channal_read_timer - ch5_timer > 2200)) {
-		SIG_fail_safe = 1;
 	}
 
 	//ch6

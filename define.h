@@ -11,56 +11,55 @@ unsigned long LED_TIMER = 0;
 
 //===========================ISR===========================//
 
-unsigned long channal_read_timer;
-unsigned long ch1_timer, ch2_timer, ch3_timer, ch4_timer, ch5_timer, ch6_timer;
+volatile unsigned long channal_read_timer;
+volatile unsigned long ch1_timer, ch2_timer, ch3_timer, ch4_timer, ch5_timer, ch6_timer;
 
-boolean ch1_s, ch2_s, ch3_s, ch4_s, ch5_s, ch6_s;
-
+volatile boolean ch1_s, ch2_s, ch3_s, ch4_s, ch5_s, ch6_s;
 
 //===========================FAILSAFE===========================//
 
 int FAIL_CODE = 0;
 
 int SIG_fail_safe_counter = 0;
-bool SIG_fail_safe = 0;
+volatile bool SIG_fail_safe = 0;
 unsigned long SIG_fail_safe_timer = 0;
 
 bool IMU_fail_safe = 0;
 
 //===========================IMU===========================//
 double IMU_ROTATION_DEGREE = 90;
-double IMU_ROTATION_ANGLE = radians(IMU_ROTATION_DEGREE);
+float imu_sin, imu_cos; // pre-computed in setup()
 
 long gyro_x, gyro_y, gyro_z;
-long acc_x, acc_y, acc_z, acc_total_vector, acc_total_vector_level;
+long acc_x, acc_y, acc_z;
 long gyro_x_cal, gyro_y_cal, gyro_z_cal;
 
-long gyro_pitch,gyro_roll,gyro_yaw;
+float gyro_pitch, gyro_roll, gyro_yaw;
 
-float angle_pitch, angle_roll, angle_yaw;
-float angle_roll_acc, angle_pitch_acc;
 float PITCH, ROLL, YAW;
 
-float pitch_cal, roll_cal, yaw_base ;
 float pitch_base = 0;
 float roll_base = 0;
+float yaw_base = 0;
 
 int temperature;
 
-bool set_gyro_angles;
-
-bool IMU_request;
 unsigned long IMU_request_timer;
-unsigned long IMU_GET_TIMER;
-long IMU_read_frequence;
+unsigned long ahrs_timer;
+
+//--- Mahony AHRS state ---
+float q0 = 1.0f, q1 = 0.0f, q2 = 0.0f, q3 = 0.0f; // quaternion
+float integralFBx = 0.0f, integralFBy = 0.0f, integralFBz = 0.0f; // gyro bias estimator
+float mahonyKp = 2.0f;   // proportional gain
+float mahonyKi = 0.005f; // integral gain
 
 //===========================POSE===========================//
 //PID
 float CONTROL_GAIN = 5;
 
 float POS_P = 0.15;
-double POS_I = 0.001;
-float POS_D = 1;
+float POS_I = 0.15;
+float POS_D = 0.5;
 
 int POS_I_MAX = 100;
 int POS_D_MAX = 100;
@@ -76,28 +75,14 @@ float HEIGHT_P = 0.1;
 float HEIGHT_I = 0;
 float HEIGHT_D = 0;
 
+//PID working state
+float PITCH_P_VAL, PITCH_I_VAL, PITCH_D_VAL;
+float ROLL_P_VAL, ROLL_I_VAL, ROLL_D_VAL;
+float YAW_P_VAL, YAW_I_VAL, YAW_D_VAL;
 
-//define
-float PITCH_P_VAL , PITCH_I_VAL , PITCH_D_VAL;
-float ROLL_P_VAL , ROLL_I_VAL , ROLL_D_VAL;
-float YAW_P_VAL , YAW_I_VAL , YAW_D_VAL;
-
-float PITCH_error_pre, ROLL_error_pre, YAW_error_pre;
+float gyro_pitch_prev, gyro_roll_prev, gyro_yaw_prev; // D-on-measurement
 
 long PITCH_PID_OUTPUT, ROLL_PID_OUTPUT, YAW_PID_OUTPUT;
-
-float FL_ROLL, FR_ROLL, BL_ROLL, BR_ROLL;
-float FL_PITCH, FR_PITCH, BL_PITCH, BR_PITCH;
-float FL_YAW, FR_YAW, BL_YAW, BR_YAW;
-int FL_out, FR_out, BL_out, BR_out;
-
-float ANG_PITCH_P_VAL , ANG_PITCH_I_VAL , ANG_PITCH_D_VAL;
-float ANG_ROLL_P_VAL , ANG_ROLL_I_VAL , ANG_ROLL_D_VAL;
-float ANG_YAW_P_VAL , ANG_YAW_I_VAL , ANG_YAW_D_VAL;
-
-float ANG_PITCH_error_pre, ANG_ROLL_error_pre, ANG_YAW_error_pre;
-
-long ANG_PITCH_PID_OUTPUT, ANG_ROLL_PID_OUTPUT, ANG_YAW_PID_OUTPUT;
 
 unsigned long PID_LOOP_TIMER = 0;
 
@@ -111,12 +96,11 @@ int CH4_MAX = 1932, CH4_MIN = 1108;
 int CH5_MAX = 2000, CH5_MIN = 1000;
 int CH6_MAX = 2000, CH6_MIN = 1000;
 
-int CH[6] = { 0,0,0,0,0,0 };
+volatile int CH[6] = { 0,0,0,0,0,0 };
 
 //===========================Serial===========================//
-float PID_VAL[3] = {POS_P, POS_I, POS_D};
-
-String DATA;
+char DATA[64];
+uint8_t DATA_idx = 0;
 
 bool READ_START = 0;
 bool REMOTE_CONTROLL = 0;
@@ -140,7 +124,6 @@ struct DEBUG_COLLECTION {
     float PITCH_I_VAL;
     float PITCH_D_VAL;
     int PITCH_PID_OUTPUT;
-    long IMU_read_frequence;
 }data;
 
 //===========================OUTPUT===========================//
@@ -155,12 +138,16 @@ boolean ARM;
 
 //===========================sys_data===========================//
 
+#define EEPROM_MAGIC_VALUE 0xA5
+
 typedef struct EEPROM_STRUCT {
+
+	uint8_t magic;
 
 	float CONTROL_GAIN;
 
 	float POS_P;
-	double POS_I;
+	float POS_I;
 	float POS_D;
 
 	int POS_I_MAX;
@@ -178,6 +165,24 @@ typedef struct EEPROM_STRUCT {
 	float HEIGHT_D;
 
 	double IMU_ROTATION_DEGREE;
+
+	float mahonyKp;
+	float mahonyKi;
+
+	float pitch_base;
+	float roll_base;
+	float yaw_base;
 }; EEPROM_STRUCT memory;
 
 bool have_written = 1;
+
+//===========================BATTERY===========================//
+#define VBAT_PIN A0
+#define VBAT_SCALE 5.7f        // voltage divider ratio (adjust to your hardware)
+#define VBAT_CELL_MIN 3.3f     // low voltage per cell (V)
+#define VBAT_CELL_FULL 4.2f    // full charge per cell (V)
+
+float battery_voltage = 0;
+uint8_t battery_cells = 0;
+float battery_low_threshold = 0;
+bool battery_low = false;

@@ -1,6 +1,8 @@
 
 void COLLECT_DATA() {
 
+	memory.magic = EEPROM_MAGIC_VALUE;
+
 	memory.CONTROL_GAIN = CONTROL_GAIN;
 	memory.POS_P = POS_P;
 	memory.POS_I = POS_I;
@@ -21,6 +23,13 @@ void COLLECT_DATA() {
 	memory.HEIGHT_D = HEIGHT_D;
 
 	memory.IMU_ROTATION_DEGREE = IMU_ROTATION_DEGREE;
+
+	memory.mahonyKp = mahonyKp;
+	memory.mahonyKi = mahonyKi;
+
+	memory.pitch_base = pitch_base;
+	memory.roll_base = roll_base;
+	memory.yaw_base = yaw_base;
 }
 
 void SET_DATA() {
@@ -45,6 +54,17 @@ void SET_DATA() {
 	HEIGHT_D = memory.HEIGHT_D;
 
 	IMU_ROTATION_DEGREE = memory.IMU_ROTATION_DEGREE;
+
+	mahonyKp = memory.mahonyKp;
+	mahonyKi = memory.mahonyKi;
+
+	pitch_base = memory.pitch_base;
+	roll_base = memory.roll_base;
+	yaw_base = memory.yaw_base;
+
+	// recompute rotation constants from loaded degree
+	imu_sin = sin(radians(IMU_ROTATION_DEGREE));
+	imu_cos = cos(radians(IMU_ROTATION_DEGREE));
 }
 
 void WRITE_EEPROM() {
@@ -54,5 +74,8 @@ void WRITE_EEPROM() {
 
 void READ_EEPROM() {
 	EEPROM.get(0, memory);
-	SET_DATA();
+	if (memory.magic == EEPROM_MAGIC_VALUE) {
+		SET_DATA();
+	}
+	// else: keep compile-time defaults
 }
